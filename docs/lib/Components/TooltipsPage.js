@@ -4,13 +4,13 @@ import { PrismCode } from 'react-prism';
 import PageTitle from '../UI/PageTitle';
 import SectionTitle from '../UI/SectionTitle';
 import TooltipExample from '../examples/Tooltip';
-const TooltipExampleSource = require('!!raw!../examples/Tooltip');
+const TooltipExampleSource = require('!!raw-loader!../examples/Tooltip');
 import TooltipAutoHideExample from '../examples/TooltipAutoHide';
-const TooltipExampleAutoHideSource = require('!!raw!../examples/TooltipAutoHide');
+const TooltipExampleAutoHideSource = require('!!raw-loader!../examples/TooltipAutoHide');
 import TooltipExampleMulti from '../examples/TooltipMulti';
-const TooltipExampleMultiSource = require('!!raw!../examples/TooltipMulti');
+const TooltipExampleMultiSource = require('!!raw-loader!../examples/TooltipMulti');
 import TooltipExampleUncontrolled from '../examples/TooltipUncontrolled';
-const TooltipExampleUncontrolledSource = require('!!raw!../examples/TooltipUncontrolled');
+const TooltipExampleUncontrolledSource = require('!!raw-loader!../examples/TooltipUncontrolled');
 
 export default class TooltipsPage extends React.Component {
   render() {
@@ -30,6 +30,10 @@ export default class TooltipsPage extends React.Component {
         <pre>
           <PrismCode className="language-jsx">
 {`Tooltip.propTypes = {
+  // space separated list of triggers (e.g. "click hover focus")
+  trigger: PropTypes.string,
+  // boundaries for popper, can be scrollParent, window, viewport, or any DOM element
+  boundariesElement: PropTypes.oneOfType([PropTypes.string, DOMElement]),
   // boolean to control the state of the tooltip
   isOpen: PropTypes.bool,
   hideArrow: PropTypes.bool,
@@ -81,10 +85,10 @@ export default class TooltipsPage extends React.Component {
   ]),
   // Custom ref handler that will be assigned to the "ref" of the <div> wrapping the tooltip elements
   innerRef: PropTypes.oneOfType([
-    PropTypes.func, 
+    PropTypes.func,
     PropTypes.string,
     PropTypes.object
-  ]),
+  ])
 }`}
           </PrismCode>
         </pre>

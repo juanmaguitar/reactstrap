@@ -1,53 +1,52 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 import React from 'react';
 import { PrismCode } from 'react-prism';
+
 import PageTitle from '../UI/PageTitle';
-import SectionTitle from '../UI/SectionTitle';
 import ModalExample from '../examples/Modal';
-const ModalExampleSource = require('!!raw!../examples/Modal');
-
 import ModalBackdropExample from '../examples/ModalBackdrop';
-const ModalBackdropExampleSource = require('!!raw!../examples/ModalBackdrop');
-
 import ModalNestedExample from '../examples/ModalNested';
-const ModalNestedExampleSource = require('!!raw!../examples/ModalNested');
-
 import ModalCustomTimeoutExample from '../examples/ModalCustomTimeout';
-const ModalCustomTimeoutExampleSource = require('!!raw!../examples/ModalCustomTimeout');
-
 import ModalFadelessExample from '../examples/ModalFadeless';
-const ModalFadelessExampleSource = require('!!raw!../examples/ModalFadeless');
-
 import ModalExternalExample from '../examples/ModalExternal';
-const ModalExternalExampleSource = require('!!raw!../examples/ModalExternal');
+import ModalCustomCloseIconExample from '../examples/ModalCustomCloseIcon';
+import ModalCustomCloseButtonExample from '../examples/ModalCustomCloseButton';
 
-export default class ModalsPage extends React.Component {
-  render() {
-    return (
-      <div>
-        <PageTitle title="Modals" />
-        <div className="docs-example">
-          <div className="btn-group">
-            <div className="btn">
-              <ModalExample buttonLabel="Launch Modal" />
-            </div>
-            <div className="btn">
-              <ModalExample
-                buttonLabel="Launch Modal with custom className"
-                className="my-custom-modal"
-              />
-            </div>
+const ModalBackdropExampleSource = require('!!raw-loader!../examples/ModalBackdrop');
+const ModalCustomCloseButtonExampleSource = require('!!raw-loader!../examples/ModalCustomCloseButton');
+const ModalCustomCloseIconExampleSource = require('!!raw-loader!../examples/ModalCustomCloseIcon');
+const ModalCustomTimeoutExampleSource = require('!!raw-loader!../examples/ModalCustomTimeout');
+const ModalExampleSource = require('!!raw-loader!../examples/Modal');
+const ModalExternalExampleSource = require('!!raw-loader!../examples/ModalExternal');
+const ModalFadelessExampleSource = require('!!raw-loader!../examples/ModalFadeless');
+const ModalNestedExampleSource = require('!!raw-loader!../examples/ModalNested');
+
+const ModalsPage = () => {
+  return (
+    <div>
+      <PageTitle title="Modals" />
+      <div className="docs-example">
+        <div className="btn-group">
+          <div className="btn">
+            <ModalExample buttonLabel="Launch Modal" />
+          </div>
+          <div className="btn">
+            <ModalExample
+              buttonLabel="Launch Modal with custom className"
+              className="my-custom-modal"
+            />
           </div>
         </div>
-        <pre>
-          <PrismCode className="language-jsx">
-            {ModalExampleSource}
-          </PrismCode>
-        </pre>
-        <h4>Properties</h4>
-        <pre>
-          <PrismCode className="language-jsx">
-{`Modal.propTypes = {
+      </div>
+      <pre>
+        <PrismCode className="language-jsx">
+          {ModalExampleSource}
+        </PrismCode>
+      </pre>
+      <h4>Properties</h4>
+      <pre>
+        <PrismCode className="language-jsx">
+          {`Modal.propTypes = {
   // boolean to control the state of the popover
   isOpen:  PropTypes.bool,
   autoFocus: PropTypes.bool,
@@ -66,7 +65,7 @@ export default class ModalsPage extends React.Component {
     PropTypes.bool,
     PropTypes.oneOf(['static'])
   ]),
-  // allows for a node/componet to exist next to the modal (outside of it). Useful for external close buttons
+  // allows for a node/component to exist next to the modal (outside of it). Useful for external close buttons
   // external: PropTypes.node,
   // called on componentDidMount
   onEnter: PropTypes.func,
@@ -99,79 +98,107 @@ export default class ModalsPage extends React.Component {
   modalTransition: PropTypes.shape(Fade.propTypes),
   innerRef: PropTypes.object,
 }`}
-          </PrismCode>
-        </pre>
+        </PrismCode>
+      </pre>
 
-        <h4>Backdrop</h4>
-        <div className="docs-example">
-          <div className="btn-group">
-            <div className="btn">
-              <ModalBackdropExample buttonLabel="Launch Modal" />
-            </div>
+      <h4>Backdrop</h4>
+      <div className="docs-example">
+        <div className="btn-group">
+          <div className="btn">
+            <ModalBackdropExample buttonLabel="Launch Modal" />
           </div>
         </div>
-        <pre>
-          <PrismCode className="language-jsx">
-            {ModalBackdropExampleSource}
-          </PrismCode>
-        </pre>
-
-        <h4>Nested Modals</h4>
-        <div className="docs-example">
-          <div className="btn-group">
-            <div className="btn">
-              <ModalNestedExample buttonLabel="Launch Modal w/ Nested Example" />
-            </div>
-          </div>
-        </div>
-        <pre>
-          <PrismCode className="language-jsx">
-            {ModalNestedExampleSource}
-          </PrismCode>
-        </pre>
-
-        <h4>Modals with Custom Transition Timeouts</h4>
-        <div className="docs-example">
-          <div className="btn-group">
-            <div className="btn">
-              <ModalCustomTimeoutExample buttonLabel="Launch Modal with Custom Transition Timeouts Example" />
-            </div>
-          </div>
-        </div>
-        <pre>
-          <PrismCode className="language-jsx">
-            {ModalCustomTimeoutExampleSource}
-          </PrismCode>
-        </pre>
-
-        <h4>Modals without Fade Effect</h4>
-        <div className="docs-example">
-          <div className="btn-group">
-            <div className="btn">
-              <ModalFadelessExample buttonLabel="Launch Modal without Fade Effect Example" />
-            </div>
-          </div>
-        </div>
-        <pre>
-          <PrismCode className="language-jsx">
-            {ModalFadelessExampleSource}
-          </PrismCode>
-        </pre>
-
-        <h4>Modals with external button</h4>
-        <div className="docs-example">
-          <div className="btn-group">
-            <div className="btn">
-              <ModalExternalExample buttonLabel="Launch Modal with external close button" />
-            </div>
-          </div>
-        </div>
-        <pre>
-          <PrismCode className="language-jsx">
-            {ModalExternalExampleSource}
-          </PrismCode>
-        </pre>
       </div>
-    );
-  }
-}
+      <pre>
+        <PrismCode className="language-jsx">
+          {ModalBackdropExampleSource}
+        </PrismCode>
+      </pre>
+
+      <h4>Nested Modals</h4>
+      <div className="docs-example">
+        <div className="btn-group">
+          <div className="btn">
+            <ModalNestedExample buttonLabel="Launch Modal w/ Nested Example" />
+          </div>
+        </div>
+      </div>
+      <pre>
+        <PrismCode className="language-jsx">
+          {ModalNestedExampleSource}
+        </PrismCode>
+      </pre>
+
+      <h4>Modals with Custom Transition Timeouts</h4>
+      <div className="docs-example">
+        <div className="btn-group">
+          <div className="btn">
+            <ModalCustomTimeoutExample buttonLabel="Launch Modal with Custom Transition Timeouts Example" />
+          </div>
+        </div>
+      </div>
+      <pre>
+        <PrismCode className="language-jsx">
+          {ModalCustomTimeoutExampleSource}
+        </PrismCode>
+      </pre>
+
+      <h4>Modals without Fade Effect</h4>
+      <div className="docs-example">
+        <div className="btn-group">
+          <div className="btn">
+            <ModalFadelessExample buttonLabel="Launch Modal without Fade Effect Example" />
+          </div>
+        </div>
+      </div>
+      <pre>
+        <PrismCode className="language-jsx">
+          {ModalFadelessExampleSource}
+        </PrismCode>
+      </pre>
+
+      <h4>Modals with external button</h4>
+      <div className="docs-example">
+        <div className="btn-group">
+          <div className="btn">
+            <ModalExternalExample buttonLabel="Launch Modal with external close button" />
+          </div>
+        </div>
+      </div>
+      <pre>
+        <PrismCode className="language-jsx">
+          {ModalExternalExampleSource}
+        </PrismCode>
+      </pre>
+
+      <h4>Modals with custom close icon</h4>
+      <div className="docs-example">
+        <div className="btn-group">
+          <div className="btn">
+            <ModalCustomCloseIconExample buttonLabel="Launch Modal with custom close Icon" />
+          </div>
+        </div>
+      </div>
+      <pre>
+        <PrismCode className="language-jsx">
+          {ModalCustomCloseIconExampleSource}
+        </PrismCode>
+      </pre>
+      <h4>Modals with custom close button</h4>
+      <div className="docs-example">
+        <div className="btn-group">
+          <div className="btn">
+            <ModalCustomCloseButtonExample buttonLabel="Launch Modal with custom close button" />
+          </div>
+        </div>
+      </div>
+      <pre>
+        <PrismCode className="language-jsx">
+          {ModalCustomCloseButtonExampleSource}
+        </PrismCode>
+      </pre>
+    </div>
+  );
+};
+
+export default ModalsPage;

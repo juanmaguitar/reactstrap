@@ -5,13 +5,16 @@ import { Button } from 'reactstrap';
 import PageTitle from '../UI/PageTitle';
 import SectionTitle from '../UI/SectionTitle';
 import ButtonExample from '../examples/Button';
-const ButtonExampleSource = require('!!raw!../examples/Button');
+const ButtonExampleSource = require('!!raw-loader!../examples/Button');
 
 import ButtonOutline from '../examples/ButtonOutline';
-const ButtonOutlineSource = require('!!raw!../examples/ButtonOutline');
+const ButtonOutlineSource = require('!!raw-loader!../examples/ButtonOutline');
 
 import ButtonStateful from '../examples/ButtonStateful';
-const ButtonStatefulSource = require('!!raw!../examples/ButtonStateful');
+const ButtonStatefulSource = require('!!raw-loader!../examples/ButtonStateful');
+
+import ButtonCloseIcon from '../examples/ButtonCloseIcon';
+const ButtonCloseIconSource = require('!!raw-loader!../examples/ButtonCloseIcon');
 
 export default class ButtonsPage extends React.Component {
   render() {
@@ -44,7 +47,10 @@ export default class ButtonsPage extends React.Component {
   innerRef: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
 
   onClick: PropTypes.func,
-  size: PropTypes.string
+  size: PropTypes.string,
+
+  // use close prop for BS4 close icon utility
+  close: PropTypes.bool,
 }`}
           </PrismCode>
         </pre>
@@ -113,7 +119,7 @@ export default class ButtonsPage extends React.Component {
 
         <SectionTitle>Checkbox and Radio Buttons (Stateful Buttons)</SectionTitle>
         <p>
-          In order to have checkbox and radio buttons, your component needs to manage the state of which button(s) are active/select. It is not in the opinion of this library to manage state within it's components so it is left up to you. Below is a simple example showcasing how this could be done uses the components which already exist in this library.
+          In order to have checkbox and radio buttons, your component needs to manage the state of which button(s) are active/select. It is not in the opinion of this library to manage state within it's components so it is left up to you. Below is a simple example showcasing how this could be done using the components which already exist in this library.
         </p>
         <div className="docs-example">
           <ButtonStateful />
@@ -121,6 +127,20 @@ export default class ButtonsPage extends React.Component {
         <pre>
           <PrismCode className="language-jsx">
             {ButtonStatefulSource}
+          </PrismCode>
+        </pre>
+
+        <SectionTitle>Close icon</SectionTitle>
+        <p>
+          Use a generic close icon to dismiss content. Use <code>&lt;Button close /&gt;</code> for the default icon. Otherwise, custom content for the button
+          may be defined. (e.g. JSX: <code>&lt;Button close&gt;&lt;span aria-hidden="true"&gt;&ndash;&lt;/span&gt;&lt;/Button&gt;</code>) The default aria-label is "Close".
+        </p>
+        <div className="docs-example">
+          <ButtonCloseIcon />
+        </div>
+        <pre>
+          <PrismCode className="language-jsx">
+            {ButtonCloseIconSource}
           </PrismCode>
         </pre>
       </div>

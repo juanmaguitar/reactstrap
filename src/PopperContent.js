@@ -3,27 +3,35 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import { Arrow, Popper as ReactPopper } from 'react-popper';
-import { getTarget, DOMElement, mapToCssModules } from './utils';
+import { getTarget, targetPropType, mapToCssModules, DOMElement, tagPropType } from './utils';
+import Fade from './Fade';
+
+function noop() {  }
 
 const propTypes = {
   children: PropTypes.node.isRequired,
-  className: PropTypes.string,
+  popperClassName: PropTypes.string,
   placement: PropTypes.string,
   placementPrefix: PropTypes.string,
   arrowClassName: PropTypes.string,
   hideArrow: PropTypes.bool,
-  tag: PropTypes.string,
+  tag: tagPropType,
   isOpen: PropTypes.bool.isRequired,
   cssModule: PropTypes.object,
   offset: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   fallbackPlacement: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   flip: PropTypes.bool,
-  container: PropTypes.oneOfType([PropTypes.string, PropTypes.func, DOMElement]),
-  target: PropTypes.oneOfType([PropTypes.string, PropTypes.func, DOMElement]).isRequired,
+  container: targetPropType,
+  target: targetPropType.isRequired,
   modifiers: PropTypes.object,
+  boundariesElement: PropTypes.oneOfType([PropTypes.string, DOMElement]),
+  onClosed: PropTypes.func,
+  fade: PropTypes.bool,
+  transition: PropTypes.shape(Fade.propTypes),
 };
 
 const defaultProps = {
+  boundariesElement: 'scrollParent',
   placement: 'auto',
   hideArrow: false,
   isOpen: false,
@@ -32,6 +40,11 @@ const defaultProps = {
   flip: true,
   container: 'body',
   modifiers: {},
+  onClosed: noop,
+  fade: true,
+  transition: {
+      ...Fade.defaultProps,
+  }
 };
 
 const childContextTypes = {
@@ -45,7 +58,9 @@ class PopperContent extends React.Component {
     this.handlePlacementChange = this.handlePlacementChange.bind(this);
     this.setTargetNode = this.setTargetNode.bind(this);
     this.getTargetNode = this.getTargetNode.bind(this);
-    this.state = {};
+    this.getRef = this.getRef.bind(this);
+    this.onClosed = this.onClosed.bind(this);
+    this.state = { isOpen: props.isOpen };
   }
 
   getChildContext() {
@@ -57,21 +72,17 @@ class PopperContent extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.handleProps();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.isOpen !== prevProps.isOpen) {
-      this.handleProps();
-    } else if (this._element) {
-      // rerender
-      this.renderIntoSubtree();
+  static getDerivedStateFromProps(props, state) {
+    if (props.isOpen && !state.isOpen) {
+      return { isOpen: props.isOpen };
     }
+    else return null;
   }
 
-  componentWillUnmount() {
-    this.hide();
+  componentDidUpdate() {
+    if (this._element && this._element.childNodes && this._element.childNodes[0] && this._element.childNodes[0].focus) {
+      this._element.childNodes[0].focus();
+    }
   }
 
   setTargetNode(node) {
@@ -86,6 +97,10 @@ class PopperContent extends React.Component {
     return getTarget(this.props.container);
   }
 
+  getRef(ref) {
+    this._element = ref;
+  }
+
   handlePlacementChange(data) {
     if (this.state.placement !== data.placement) {
       this.setState({ placement: data.placement });
@@ -93,39 +108,9 @@ class PopperContent extends React.Component {
     return data;
   }
 
-  handleProps() {
-    if (this.props.container !== 'inline') {
-      if (this.props.isOpen) {
-        this.show();
-      } else {
-        this.hide();
-      }
-    }
-  }
-
-  hide() {
-    if (this._element) {
-      this.getContainerNode().removeChild(this._element);
-      ReactDOM.unmountComponentAtNode(this._element);
-      this._element = null;
-    }
-  }
-
-  show() {
-    this._element = document.createElement('div');
-    this.getContainerNode().appendChild(this._element);
-    this.renderIntoSubtree();
-    if (this._element.childNodes && this._element.childNodes[0] && this._element.childNodes[0].focus) {
-      this._element.childNodes[0].focus();
-    }
-  }
-
-  renderIntoSubtree() {
-    ReactDOM.unstable_renderSubtreeIntoContainer(
-      this,
-      this.renderChildren(),
-      this._element
-    );
+  onClosed() {
+    this.props.onClosed();
+    this.setState({ isOpen: false });
   }
 
   renderChildren() {
@@ -140,10 +125,14 @@ class PopperContent extends React.Component {
       placementPrefix,
       arrowClassName: _arrowClassName,
       hideArrow,
-      className,
+      popperClassName: _popperClassName,
       tag,
       container,
       modifiers,
+      boundariesElement,
+      onClosed,
+      fade,
+      transition,
       ...attrs
     } = this.props;
     const arrowClassName = mapToCssModules(classNames(
@@ -152,13 +141,14 @@ class PopperContent extends React.Component {
     ), cssModule);
     const placement = (this.state.placement || attrs.placement).split('-')[0];
     const popperClassName = mapToCssModules(classNames(
-      className,
+      _popperClassName,
       placementPrefix ? `${placementPrefix}-${placement}` : placement
     ), this.props.cssModule);
 
     const extendedModifiers = {
       offset: { offset },
       flip: { enabled: flip, behavior: fallbackPlacement },
+      preventOverflow: { boundariesElement },
       update: {
         enabled: true,
         order: 950,
@@ -167,19 +157,36 @@ class PopperContent extends React.Component {
       ...modifiers,
     };
 
+    const popperTransition = {
+      ...Fade.defaultProps,
+      ...transition,
+      baseClass: fade ? transition.baseClass : '',
+      timeout: fade ? transition.timeout : 0,
+    }
+
     return (
-      <ReactPopper modifiers={extendedModifiers} {...attrs} component={tag} className={popperClassName} x-placement={this.state.placement || attrs.placement}>
-        {children}
-        {!hideArrow && <Arrow className={arrowClassName} />}
-      </ReactPopper>
+      <Fade
+        {...popperTransition}
+        {...attrs}
+        in={isOpen}
+        onExited={this.onClosed}
+        tag={tag}
+      >
+        <ReactPopper modifiers={extendedModifiers} className={popperClassName} x-placement={this.state.placement || attrs.placement} placement={this.state.placement || attrs.placement}>
+            {children}
+            {!hideArrow && <Arrow className={arrowClassName} />}
+        </ReactPopper>
+      </Fade>
     );
   }
 
   render() {
     this.setTargetNode(getTarget(this.props.target));
 
-    if (this.props.container === 'inline') {
-      return this.props.isOpen ? this.renderChildren() : null;
+    if (this.state.isOpen) {
+      return this.props.container === 'inline' ?
+        this.renderChildren() :
+        ReactDOM.createPortal((<div ref={this.getRef}>{this.renderChildren()}</div>), this.getContainerNode());
     }
 
     return null;
